@@ -302,8 +302,7 @@
                 // memo1およびmemo2が存在するか確認し、存在しない場合は空文字列にする
                 const memo1 = entry.bus_right.memo1 || '';
                 const memo2 = entry.bus_right.memo2 || '';
-                const isTemporarySchedule = (entry.bus_right.memo1 && entry.bus_right.memo1.includes('適時運行')) ||
-                    (entry.bus_right.memo2 && entry.bus_right.memo2.includes('適時運行'));
+                const isTemporarySchedule = (entry.bus_right.memo2 && entry.bus_right.memo2.includes('適時運行'));
 
                 busTimes.forEach(busTime => {
                     if (isNumeric(busTime) || isTemporarySchedule) {
