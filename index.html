@@ -1,408 +1,416 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>バスと電車の時刻情報</title>
-  <!-- 1. ビューポートメタタグの追加 -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .container {
-      max-width: 900px;
-      margin-top: 50px;
-      margin-bottom: 50px;
-    }
-    .location-card {
-      margin-top: 20px;
-    }
-    .loading, .error {
-      text-align: center;
-      margin-top: 20px;
-    }
-    .loading {
-      color: #475060;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .error {
-      color: #dc3545;
-    }
-    .explanation {
-      margin-top: 40px;
-    }
-    /* カスタムカラークラス */
-    .destination-a-b {
-      color: #e81b1a;
-    }
-    .destination-other {
-      color: #ff9a4e;
-    }
-    /* モバイル時のフォントサイズと間隔の調整 */
-    @media (max-width: 576px) {
-      .container {
-        padding: 15px;
-      }
-      .explanation ul {
-        padding-left: 20px;
-      }
-      .explanation li {
-        margin-bottom: 10px;
-      }
-      .card-title {
-        font-size: 1.25rem;
-      }
-      .card-text {
-        font-size: 1rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>バスと電車の時刻情報</title>
+    <!-- ビューポートメタタグの追加 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 900px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        .location-card {
+            margin-top: 20px;
+        }
+        .loading, .error {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading {
+            color: #475060;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .explanation {
+            margin-top: 40px;
+        }
+        /* カスタムカラークラス */
+        .destination-a-b {
+            color: #e81b1a;
+        }
+        .destination-other {
+            color: #ff9a4e;
+        }
+        /* モバイル時のフォントサイズと間隔の調整 */
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px;
+            }
+            .explanation ul {
+                padding-left: 20px;
+            }
+            .explanation li {
+                margin-bottom: 10px;
+            }
+            .card-title {
+                font-size: 1.25rem;
+            }
+            .card-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-  <h1 class="text-center mb-4">大宮スクールバスの時刻情報</h1>
+    <h1 class="text-center mb-4">バスと電車の時刻情報</h1>
 
-  <!-- 出発場所の選択 -->
-  <div class="mb-4">
-    <label for="departureSelect" class="form-label">出発場所を選択してください:</label>
-    <select class="form-select" id="departureSelect">
-      <option value="" disabled selected>選択してください</option>
-      <option value="生協">生協</option>
-      <option value="記念館">記念館</option>
-      <option value="2号館">2号館</option>
-      <option value="3号館">3号館</option>
-      <option value="4号館">4号館</option>
-      <option value="5号館">5号館</option>
-      <option value="6号館">6号館</option>
-      <option value="図書館">図書館</option>
-    </select>
-  </div>
+    <!-- 出発場所の選択 -->
+    <div class="mb-4">
+        <label for="departureSelect" class="form-label">出発場所を選択してください:</label>
+        <select class="form-select" id="departureSelect">
+            <option value="" disabled selected>選択してください</option>
+            <option value="生協">生協</option>
+            <option value="斎藤記念館">斎藤記念館</option>
+            <option value="2号館">2号館</option>
+            <option value="3号館">3号館</option>
+            <option value="4号館">4号館</option>
+            <option value="5号館">5号館</option>
+            <option value="6号館">6号館</option>
+            <option value="図書館">図書館</option>
+        </select>
+    </div>
 
-  <!-- コンテンツ表示エリア -->
-  <div id="content">
-    <p class="loading">出発場所を選択してください。</p>
-  </div>
+    <!-- コンテンツ表示エリア -->
+    <div id="content">
+        <p class="loading">出発場所を選択してください。</p>
+    </div>
 
-  <!-- 説明セクション -->
-  <div class="explanation">
-    <h3>このアプリについて</h3>
-    <p>
-      このアプリは、選択した出発場所からバス停までの所要時間に基づいて、次のバスと東京方面（上り）の電車の時刻情報を提供します。
-    </p>
-    <h3>用語集</h3>
-    <ul>
-      <li><strong>余裕をもって移動できます</strong><br>: 徒歩で移動した場合でも、バス停到着からバスが来るまでに3分以上待ちます。</li>
-      <li><strong>すぐ出発すれば間に合います</strong><br>: 徒歩で移動した場合、バス停到着から1分程度でバスが来ます。</li>
-      <li><strong>急げば間に合います</strong><br>: 走れば次のバスに間に合います。</li>
-      <li><strong>徒歩を推奨します</strong><br>: 次のバスが到着するまでに20分以上かかるため、徒歩での移動を推奨しています。</li>
-      <li><strong>次のバスをご利用ください</strong><br>: 次のバスに間に合わない場合、次に利用可能なバスを案内しています。</li>
-      <li><strong>予想到着時間</strong><br>: バスが駅前に到着した後、電車が来るまでの推定の時間です。</li>
-      <li><strong>行先</strong><br>: 電車の行先です。オレンジ色が宇都宮線、赤色が湘南新宿ラインです。</li>
-    </ul>
-    <h3>建物からバス停への所要時間について</h3>
-    <p>
-      所要時間は、現在時刻から以下の時間を足した時間として処理を行っています。<br>
-    <ul>
-      <li><strong>生協</strong><br>　徒歩:2分　　走り:1分</li>
-      <li><strong>記念館</strong><br>　徒歩:3分　　走り:2分</li>
-      <li><strong>2号館, 3号館</strong><br>　徒歩:3.5分　 走り:2.5分</li>
-      <li><strong>4号館, 5号館</strong><br>　徒歩:5分　　走り:3分</li>
-      <li><strong>6号館, 図書館</strong><br>　徒歩:5.5分　 走り:3.5分</li>
-    </ul>
-    <br>
-    <b>※実際の状況とは異なる場合がある場合があります。ご了承ください。</b>
-    <br>
-    <b>※適時運行時はバス停到着時刻から15分後を基準に次の電車の予想到着時刻を表示しています。</b>
-    </p>
-  </div>
+    <!-- 説明セクション -->
+    <div class="explanation">
+        <h3>このアプリについて</h3>
+        <p>
+            このアプリは、選択した出発場所からバス停までの所要時間に基づいて、次のバスと東京方面（上り）の電車の時刻情報を提供します。
+        </p>
+        <h3>用語集</h3>
+        <ul>
+            <li><strong>余裕をもって移動できます</strong><br>: 徒歩で移動した場合でも、バス停到着からバスが来るまでに3分以上待ちます。</li>
+            <li><strong>すぐ出発すれば間に合います</strong><br>: 徒歩で移動した場合、バス停到着から1分程度でバスが来ます。</li>
+            <li><strong>急げば間に合います</strong><br>: 走れば次のバスに間に合います。</li>
+            <li><strong>徒歩を推奨します</strong><br>: 次のバスが到着するまでに20分以上かかるため、徒歩での移動を推奨しています。</li>
+            <li><strong>次のバスをご利用ください</strong><br>: 次のバスに間に合わない場合、次に利用可能なバスを案内しています。</li>
+            <li><strong>予想到着時間</strong><br>: バスが駅前に到着した後、電車が来るまでの推定の時間です。</li>
+            <li><strong>行先</strong><br>: 電車の行先です。オレンジ色が宇都宮線、赤色が湘南新宿ラインです。</li>
+        </ul>
+        <h3>建物からバス停への所要時間について</h3>
+        <p>
+            所要時間は、現在時刻から以下の時間を足した時間として処理を行っています。<br>
+        <ul>
+            <li><strong>生協</strong><br>　徒歩:2分　　走り:1分</li>
+            <li><strong>斎藤記念館</strong><br>　徒歩:3分　　走り:2分</li>
+            <li><strong>2号館, 3号館</strong><br>　徒歩:3.5分　 走り:2.5分</li>
+            <li><strong>4号館, 5号館</strong><br>　徒歩:5分　　走り:3分</li>
+            <li><strong>6号館, 図書館</strong><br>　徒歩:5.5分　 走り:3.5分</li>
+        </ul>
+        <br>
+        <b>※実際の状況とは異なる場合がある場合があります。ご了承ください。</b>
+        <br>
+        <b>※適時運行時はバス停到着時刻から15分後を基準に次の電車の予想到着時刻を表示しています。</b>
+        </p>
+    </div>
 </div>
 
 <!-- Bootstrap JS Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  // 各場所からバス停までの所要時間（単位は分）
-  const locations = {
-    "生協": {"walk": 2, "run": 1},
-    "記念館": {"walk": 3, "run": 2},
-    "2号館": {"walk": 3.5, "run": 2.5},
-    "3号館": {"walk": 3.5, "run": 2.5},
-    "4号館": {"walk": 5, "run": 3},
-    "5号館": {"walk": 5, "run": 3},
-    "6号館": {"walk": 5.5, "run": 3.5},
-    "図書館": {"walk": 5.5, "run": 3.5},
-  };
+    // 各場所からバス停までの所要時間（単位は分）
+    const locations = {
+        "生協": {"walk": 2, "run": 1},
+        "斎藤記念館": {"walk": 3, "run": 2},
+        "2号館": {"walk": 3.5, "run": 2.5},
+        "3号館": {"walk": 3.5, "run": 2.5},
+        "4号館": {"walk": 5, "run": 3},
+        "5号館": {"walk": 5, "run": 3},
+        "6号館": {"walk": 5.5, "run": 3.5},
+        "図書館": {"walk": 5.5, "run": 3.5},
+    };
 
-  // 行き先記号の設定
-  const destinationSettings = {
-    "": "上野",
-    "a": "逗子",
-    "b": "大船",
-    "c": "大宮",
-    "d": "熱海",
-    "e": "小田原",
-    "f": "沼津",
-    "g": "平塚",
-    "h": "国府津",
-    "i": "伊東",
-    "j": "品川",
-  };
+    // 行き先記号の設定
+    const destinationSettings = {
+        "": "上野",
+        "a": "逗子",
+        "b": "大船",
+        "c": "大宮",
+        "d": "熱海",
+        "e": "小田原",
+        "f": "沼津",
+        "g": "平塚",
+        "h": "国府津",
+        "i": "伊東",
+        "j": "品川",
+    };
 
-  // CORSプロキシのURLを設定（All Originsを使用）
-  const proxyUrl = 'https://api.allorigins.win/raw?url=';
-  const targetUrl = 'http://bus.shibaura-it.ac.jp/db/bus_data.json';
-  const dataUrl = proxyUrl + encodeURIComponent(targetUrl);
+    // CORSプロキシのURLを設定（Thingproxyを使用）
+    const proxyUrl = 'https://thingproxy.freeboard.io/fetch/';
+    const targetUrl = 'http://bus.shibaura-it.ac.jp/db/bus_data.json';
+    const dataUrl = proxyUrl + encodeURIComponent(targetUrl);
 
-  let currentTime = new Date();
+    let currentTime = new Date();
 
-  // ページロード時に現在時刻を設定し、15秒ごとに更新
-  window.onload = () => {
-    currentTime = new Date();
-    // 15秒ごとに時刻を更新
-    setInterval(() => {
-      currentTime = new Date();
-    }, 15000);
-  };
+    // ページロード時に現在時刻を設定し、1分ごとに更新
+    window.onload = () => {
+        currentTime = new Date();
+        // 1分ごとに時刻を更新
+        setInterval(() => {
+            currentTime = new Date();
+        }, 60000);
+    };
 
-  // データの自動更新設定
-  let updateInterval = null;
+    // データの自動更新設定
+    let updateInterval = null;
 
-  // イベントリスナー: 出発場所が選択されたとき
-  document.getElementById('departureSelect').addEventListener('change', function() {
-    const selectedLocation = this.value;
-    if (selectedLocation) {
-      // 既存の自動更新をクリア
-      if (updateInterval) {
-        clearInterval(updateInterval);
-      }
-      // データを表示
-      fetchDataAndDisplay(selectedLocation);
-      // 【修正点】20秒ごとにデータを更新するように変更
-      updateInterval = setInterval(() => {
-        fetchDataAndDisplay(selectedLocation);
-      }, 20000); // 20,000ミリ秒 = 20秒
-    }
-  });
-
-  // データ取得と表示のメイン関数
-  async function fetchDataAndDisplay(locationName) {
-    const contentDiv = document.getElementById('content');
-    contentDiv.innerHTML = '<p class="loading">データを取得中...</p>';
-
-    try {
-      const response = await fetch(dataUrl);
-      if (!response.ok) {
-        throw new Error('データの取得に失敗しました。');
-      }
-      const data = await response.json();
-      const schedule = data.timesheet[0].list;
-
-      // 次のバスと電車の時刻を計算
-      const { nextBuses, nextTrains } = getNextTimes(currentTime, schedule);
-
-      // メッセージを生成
-      const message = generateMessage(locationName, locations[locationName], nextBuses, nextTrains);
-
-      // カードの作成
-      const card = createCard(locationName, message);
-      contentDiv.innerHTML = ''; // ローディングメッセージをクリア
-      contentDiv.appendChild(card);
-    } catch (error) {
-      contentDiv.innerHTML = `<p class="error">${error.message}</p>`;
-      console.error(error);
-    }
-  }
-
-  // メッセージ生成関数
-  function generateMessage(locationName, times, nextBuses, trainTimes) {
-    if (nextBuses.length === 0) {
-      return `<strong>${locationName}:</strong> 本日のバスはもうありません。`;
-    }
-
-    const { walk, run } = times;
-    const nextBus = nextBuses[0];
-    const nextBusTime = new Date(nextBus.time);
-    const nextBusInMinutes = nextBus.minutesUntil;
-    const isTemporary = nextBus.isTemporary;
-
-    let message = '';
-    let arrivalTime;
-
-    if (isTemporary) {
-      message = "この時間は適時運行です。";
-      arrivalTime = new Date(currentTime.getTime() + (walk + 13) * 60000);
-    } else {
-      const walkTimeLeft = nextBusInMinutes - walk;
-      if (walkTimeLeft >= 3) {
-        message = "余裕をもって移動できます。";
-      } else if (walkTimeLeft >= 1) {
-        message = "すぐ出発すれば間に合います。";
-      } else {
-        const runTimeLeft = nextBusInMinutes - run;
-        if (runTimeLeft >= 0.5) {
-          message = "急げば間に合います。";
-        } else {
-          if (nextBuses.length > 1) {
-            const nextNextBus = nextBuses[1];
-            const timeToNextNextBus = nextNextBus.minutesUntil - walk;
-            return `<strong>${locationName}:</strong> 次のバスをご利用ください（次は ${timeToNextNextBus.toFixed(1)} 分後です）。`;
-          } else {
-            return `<strong>${locationName}:</strong> 次のバスをご利用ください（次は本日中にありません）。`;
-          }
-        }
-      }
-      arrivalTime = new Date(nextBus.time.getTime() + 10 * 60000);
-    }
-
-    const { nextTrainTime, destination } = findNextTrain(arrivalTime, trainTimes);
-    let nextTrainMessage = '';
-
-    if (nextTrainTime) {
-      const minutesUntilNextTrain = (nextTrainTime - arrivalTime) / 60000;
-      const nextTrainStr = formatTime(nextTrainTime);
-      if (minutesUntilNextTrain >= 60) {
-        const hours = Math.floor(minutesUntilNextTrain / 60);
-        const minutes = Math.floor(minutesUntilNextTrain % 60);
-        nextTrainMessage = `次の上り電車は <strong>${nextTrainStr}</strong> 行き先: <span class="${["a", "b"].includes(getDestinationKey(destination)) ? 'destination-a-b' : 'destination-other'}">${destination}</span> で、予想到着時間は <strong>${hours}</strong> 時間 <strong>${minutes}</strong> 分後です。`;
-      } else {
-        nextTrainMessage = `次の上り電車は <strong>${nextTrainStr}</strong> 行き先: <span class="${["a", "b"].includes(getDestinationKey(destination)) ? 'destination-a-b' : 'destination-other'}">${destination}</span> で、予想到着時間は <strong>${minutesUntilNextTrain.toFixed(1)}</strong> 分後です。`;
-      }
-    } else {
-      nextTrainMessage = "本日中に次の電車はありません。";
-    }
-
-    if (isTemporary) {
-      return `<strong>${locationName}:</strong> ${message} ${nextTrainMessage}`;
-    } else {
-      let finalMessage = `${message} （バス停に到着してから ${nextBusInMinutes.toFixed(1)} 分でバスが来ます）。 ${nextTrainMessage}`;
-      if (nextBusInMinutes > 20) {
-        finalMessage += " （徒歩を推奨します。）";
-      }
-      return `<strong>${locationName}:</strong> ${finalMessage}`;
-    }
-  }
-
-  // バスと電車の次の時刻を取得
-  function getNextTimes(currentTime, schedule) {
-    const nextBuses = [];
-    const nextTrains = [];
-
-    schedule.forEach(entry => {
-      if (isNumeric(entry.time) && parseInt(entry.time) >= currentTime.getHours()) {
-        // バス時刻の処理
-        const busTimes = entry.bus_right.num1.split('.');
-        const isTemporarySchedule = entry.bus_right.memo1.includes('適時運行') || entry.bus_right.memo2.includes('適時運行');
-
-        busTimes.forEach(busTime => {
-          if (isNumeric(busTime) || isTemporarySchedule) {
-            const busHour = parseInt(entry.time);
-            const busMinute = isNumeric(busTime) ? parseInt(busTime) : currentTime.getMinutes();
-            const busDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), busHour, busMinute);
-
-            const diffMinutes = (busDate - currentTime) / 60000;
-            if (busDate > currentTime || isTemporarySchedule) {
-              nextBuses.push({
-                time: busDate,
-                minutesUntil: diffMinutes,
-                isTemporary: isTemporarySchedule
-              });
+    // イベントリスナー: 出発場所が選択されたとき
+    document.getElementById('departureSelect').addEventListener('change', function() {
+        const selectedLocation = this.value;
+        if (selectedLocation) {
+            // 既存の自動更新をクリア
+            if (updateInterval) {
+                clearInterval(updateInterval);
             }
-          }
+            // データを表示
+            fetchDataAndDisplay(selectedLocation);
+            // 20秒ごとにデータを更新するように変更
+            updateInterval = setInterval(() => {
+                fetchDataAndDisplay(selectedLocation);
+            }, 20000); // 20,000ミリ秒 = 20秒
+        }
+    });
+
+    // データ取得と表示のメイン関数
+    async function fetchDataAndDisplay(locationName) {
+        const contentDiv = document.getElementById('content');
+        contentDiv.innerHTML = '<p class="loading">データを取得中...</p>';
+
+        try {
+            const response = await fetch(dataUrl);
+            if (!response.ok) {
+                throw new Error('データの取得に失敗しました。');
+            }
+            const data = await response.json();
+            const schedule = data.timesheet[0].list;
+
+            // 次のバスと電車の時刻を計算
+            const { nextBuses, nextTrains } = getNextTimes(currentTime, schedule);
+
+            // メッセージを生成
+            const message = generateMessage(locationName, locations[locationName], nextBuses, nextTrains);
+
+            // カードの作成
+            const card = createCard(locationName, message);
+            contentDiv.innerHTML = ''; // ローディングメッセージをクリア
+            contentDiv.appendChild(card);
+        } catch (error) {
+            contentDiv.innerHTML = `<p class="error">${error.message}</p>`;
+            console.error(error);
+        }
+    }
+
+    // メッセージ生成関数
+    function generateMessage(locationName, times, nextBuses, trainTimes) {
+        if (nextBuses.length === 0) {
+            return `<strong>${locationName}:</strong> 本日のバスはもうありません。`;
+        }
+
+        const { walk, run } = times;
+        const nextBus = nextBuses[0];
+        const nextBusInMinutes = nextBus.minutesUntil;
+        const isTemporary = nextBus.isTemporary;
+
+        let message = '';
+        let arrivalTime;
+
+        if (isTemporary) {
+            message = "この時間は適時運行です。";
+            // 適時運行の場合、到着時間を適宜設定（ここでは仮にwalk + 13分後）
+            arrivalTime = new Date(currentTime.getTime() + (walk + 13) * 60000);
+        } else {
+            const walkTimeLeft = nextBusInMinutes - walk;
+            if (walkTimeLeft >= 3) {
+                message = "余裕をもって移動できます。";
+            } else if (walkTimeLeft >= 1) {
+                message = "すぐ出発すれば間に合います。";
+            } else {
+                const runTimeLeft = nextBusInMinutes - run;
+                if (runTimeLeft >= 0.5) {
+                    message = "急げば間に合います。";
+                } else {
+                    if (nextBuses.length > 1) {
+                        const nextNextBus = nextBuses[1];
+                        const timeToNextNextBus = nextNextBus.minutesUntil - walk;
+                        return `<strong>${locationName}:</strong> 次のバスをご利用ください（次は ${timeToNextNextBus.toFixed(1)} 分後です）。`;
+                    } else {
+                        return `<strong>${locationName}:</strong> 次のバスをご利用ください（次は本日中にありません）。`;
+                    }
+                }
+            }
+            // 到着時間をバス到着時間後に設定（ここでは仮に10分後）
+            arrivalTime = new Date(nextBus.time.getTime() + 10 * 60000);
+        }
+
+        const { nextTrainTime, destination } = findNextTrain(arrivalTime, trainTimes);
+        let nextTrainMessage = '';
+
+        if (nextTrainTime) {
+            const minutesUntilNextTrain = (nextTrainTime - arrivalTime) / 60000;
+            const nextTrainStr = formatTime(nextTrainTime);
+            const destinationKey = getDestinationKey(destination);
+            const destinationClass = ["a", "b"].includes(destinationKey) ? 'destination-a-b' : 'destination-other';
+
+            if (minutesUntilNextTrain >= 60) {
+                const hours = Math.floor(minutesUntilNextTrain / 60);
+                const minutes = Math.floor(minutesUntilNextTrain % 60);
+                nextTrainMessage = `次の上り電車は <strong>${nextTrainStr}</strong> 行き先: <span class="${destinationClass}">${destination}</span> で、予想到着時間は <strong>${hours}</strong> 時間 <strong>${minutes}</strong> 分後です。`;
+            } else {
+                nextTrainMessage = `次の上り電車は <strong>${nextTrainStr}</strong> 行き先: <span class="${destinationClass}">${destination}</span> で、予想到着時間は <strong>${minutesUntilNextTrain.toFixed(1)}</strong> 分後です。`;
+            }
+        } else {
+            nextTrainMessage = "本日中に次の電車はありません。";
+        }
+
+        if (isTemporary) {
+            return `<strong>${locationName}:</strong> ${message} ${nextTrainMessage}`;
+        } else {
+            let finalMessage = `${message} （バス停に到着してから ${nextBusInMinutes.toFixed(1)} 分でバスが来ます）。 ${nextTrainMessage}`;
+            if (nextBusInMinutes > 20) {
+                finalMessage += " （徒歩を推奨します。）";
+            }
+            return `<strong>${locationName}:</strong> ${finalMessage}`;
+        }
+    }
+
+    // バスと電車の次の時刻を取得
+    function getNextTimes(currentTime, schedule) {
+        const nextBuses = [];
+        const nextTrains = [];
+
+        schedule.forEach(entry => {
+            if (isNumeric(entry.time) && parseInt(entry.time) >= currentTime.getHours()) {
+                // バス時刻の処理
+                const busTimes = entry.bus_right.num1.split('.');
+                // memo1およびmemo2が存在するか確認し、存在しない場合は空文字列にする
+                const memo1 = entry.bus_right.memo1 || '';
+                const memo2 = entry.bus_right.memo2 || '';
+                const isTemporarySchedule = (entry.bus_right.memo1 && entry.bus_right.memo1.includes('適時運行')) ||
+                    (entry.bus_right.memo2 && entry.bus_right.memo2.includes('適時運行'));
+
+                busTimes.forEach(busTime => {
+                    if (isNumeric(busTime) || isTemporarySchedule) {
+                        const busHour = parseInt(entry.time);
+                        const busMinute = isNumeric(busTime) ? parseInt(busTime) : currentTime.getMinutes();
+                        const busDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), busHour, busMinute);
+
+                        const diffMinutes = (busDate - currentTime) / 60000;
+                        if (busDate > currentTime || isTemporarySchedule) {
+                            nextBuses.push({
+                                time: busDate,
+                                minutesUntil: diffMinutes,
+                                isTemporary: isTemporarySchedule
+                            });
+                        }
+                    }
+                });
+
+                // 電車時刻の処理
+                const trainTimesParsed = parseTrainTimes(entry, 'train_right');
+                trainTimesParsed.forEach(train => nextTrains.push(train));
+            }
         });
 
-        // 電車時刻の処理
-        const trainTimesParsed = parseTrainTimes(entry, 'train_right');
-        trainTimesParsed.forEach(train => nextTrains.push(train));
-      }
-    });
+        // ソート
+        nextBuses.sort((a, b) => a.time - b.time);
+        nextTrains.sort((a, b) => a.time - b.time);
 
-    // ソート
-    nextBuses.sort((a, b) => a.time - b.time);
-    nextTrains.sort((a, b) => a.time - b.time);
+        return { nextBuses, nextTrains };
+    }
 
-    return { nextBuses, nextTrains };
-  }
+    // 電車時刻の解析
+    function parseTrainTimes(entry, direction) {
+        const trainTimes = [];
+        ['num1', 'num2'].forEach(numKey => {
+            const trainData = entry[direction][numKey].split('.');
+            trainData.forEach(trainInfo => {
+                if (trainInfo && trainInfo.slice(1).match(/^\d{2}$/)) {
+                    const minute = parseInt(trainInfo.slice(1, 3));
+                    const destinationMark = trainInfo.charAt(0);
+                    // destinationSettingsに存在しない場合は "上野" をデフォルトとする
+                    const destination = destinationSettings.hasOwnProperty(destinationMark) ? destinationSettings[destinationMark] : "上野";
+                    let trainHour = parseInt(entry.time);
+                    let trainDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), trainHour, minute);
+                    // 時刻が既に過ぎている場合、翌日に繰り越す
+                    if (trainDate < currentTime) {
+                        trainDate = new Date(trainDate.getTime() + 24 * 60 * 60 * 1000);
+                    }
+                    trainTimes.push({ time: trainDate, destination });
+                }
+            });
+        });
+        return trainTimes;
+    }
 
-  // 電車時刻の解析
-  function parseTrainTimes(entry, direction) {
-    const trainTimes = [];
-    ['num1', 'num2'].forEach(numKey => {
-      const trainData = entry[direction][numKey].split('.');
-      trainData.forEach(trainInfo => {
-        if (trainInfo && trainInfo.slice(1).match(/^\d{2}$/)) {
-          const minute = parseInt(trainInfo.slice(1, 3));
-          const destinationMark = trainInfo.charAt(0);
-          // destinationSettingsに存在しない場合は "上野" をデフォルトとする
-          const destination = destinationSettings.hasOwnProperty(destinationMark) ? destinationSettings[destinationMark] : "上野";
-          let trainHour = parseInt(entry.time);
-          let trainDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), trainHour, minute);
-          // 時刻が既に過ぎている場合、翌日に繰り越す
-          if (trainDate < currentTime) {
-            trainDate = new Date(trainDate.getTime() + 24 * 60 * 60 * 1000);
-          }
-          trainTimes.push({ time: trainDate, destination });
+    // 次の電車を探す
+    function findNextTrain(arrivalTime, trainTimes) {
+        for (let train of trainTimes) {
+            if (train.time > arrivalTime) {
+                return { nextTrainTime: train.time, destination: train.destination };
+            }
         }
-      });
-    });
-    return trainTimes;
-  }
-
-  // 次の電車を探す
-  function findNextTrain(arrivalTime, trainTimes) {
-    for (let train of trainTimes) {
-      if (train.time > arrivalTime) {
-        return { nextTrainTime: train.time, destination: train.destination };
-      }
+        return { nextTrainTime: null, destination: null };
     }
-    return { nextTrainTime: null, destination: null };
-  }
 
-  // 時刻をHH:MM形式でフォーマット
-  function formatTime(date) {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
-
-  // 数値かどうかをチェック
-  function isNumeric(value) {
-    return /^-?\d+$/.test(value);
-  }
-
-  // デスティネーションマークを取得
-  function getDestinationKey(destination) {
-    for (const [key, value] of Object.entries(destinationSettings)) {
-      if (value === destination) return key;
+    // 時刻をHH:MM形式でフォーマット
+    function formatTime(date) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
     }
-    return null;
-  }
 
-  // カード要素を作成
-  function createCard(title, message) {
-    const card = document.createElement('div');
-    card.classList.add('card', 'location-card');
+    // 数値かどうかをチェック
+    function isNumeric(value) {
+        return /^-?\d+$/.test(value);
+    }
 
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body');
+    // デスティネーションマークを取得
+    function getDestinationKey(destination) {
+        for (const [key, value] of Object.entries(destinationSettings)) {
+            if (value === destination) return key;
+        }
+        return null;
+    }
 
-    const cardTitle = document.createElement('h5');
-    cardTitle.classList.add('card-title');
-    cardTitle.textContent = title;
+    // カード要素を作成
+    function createCard(title, message) {
+        const card = document.createElement('div');
+        card.classList.add('card', 'location-card');
 
-    const cardText = document.createElement('p');
-    cardText.classList.add('card-text');
-    cardText.innerHTML = message;
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
 
-    cardBody.appendChild(cardTitle);
-    cardBody.appendChild(cardText);
-    card.appendChild(cardBody);
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title');
+        cardTitle.textContent = title;
 
-    return card;
-  }
+        const cardText = document.createElement('p');
+        cardText.classList.add('card-text');
+        cardText.innerHTML = message;
+
+        cardBody.appendChild(cardTitle);
+        cardBody.appendChild(cardText);
+        card.appendChild(cardBody);
+
+        return card;
+    }
 </script>
 
 </body>
